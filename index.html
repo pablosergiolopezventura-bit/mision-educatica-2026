@@ -63,6 +63,150 @@ body {
     rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
 }
 
+/* ── NOTIFICATION SYSTEM ── */
+.notification-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+  max-width: 350px;
+}
+
+.notification {
+  background: linear-gradient(145deg, var(--blue-1), #031525);
+  border: 2px solid var(--cyan);
+  border-radius: 15px;
+  padding: 15px 20px;
+  box-shadow: 0 0 30px var(--cyan-glow);
+  transform: translateX(120%);
+  animation: slideIn 0.5s ease forwards, glowPulse 2s infinite;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.notification::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cyan), var(--gold), var(--cyan));
+  animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes slideIn {
+  0% { transform: translateX(120%) scale(0.8); opacity: 0; }
+  50% { transform: translateX(-10%) scale(1.05); }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+@keyframes glowPulse {
+  0%,100% { box-shadow: 0 0 20px rgba(0,229,255,0.3); }
+  50% { box-shadow: 0 0 40px rgba(0,229,255,0.6); }
+}
+
+.notification.win {
+  border-color: var(--gold);
+  background: linear-gradient(145deg, rgba(255,193,7,0.1), #031525);
+}
+
+.notification.win::before {
+  background: linear-gradient(90deg, var(--gold), var(--cyan), var(--gold));
+}
+
+.notification-icon {
+  font-size: 1.5rem;
+  margin-right: 12px;
+  display: inline-block;
+  animation: bounce 1s ease infinite;
+}
+
+@keyframes bounce {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+}
+
+.notification-text {
+  flex: 1;
+}
+
+.notification-title {
+  font-family: var(--font-hd);
+  font-size: 0.9rem;
+  color: var(--cyan);
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+.notification.win .notification-title {
+  color: var(--gold);
+}
+
+.notification-message {
+  font-size: 0.85rem;
+  color: var(--white);
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.notification-score {
+  font-family: var(--font-hd);
+  font-size: 1.2rem;
+  color: var(--gold);
+  margin-left: 10px;
+  text-shadow: 0 0 10px rgba(255,193,7,0.5);
+}
+
+.notification-time {
+  font-size: 0.7rem;
+  color: var(--grey);
+  margin-top: 5px;
+  text-align: right;
+}
+
+.notification-close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: var(--grey);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  pointer-events: all;
+}
+
+.notification-close:hover {
+  background: rgba(255,23,68,0.3);
+  color: var(--red);
+  transform: scale(1.1);
+}
+
 /* ── SLIDES ── */
 .slide {
   position: fixed; inset: 0; z-index: 10;
@@ -146,36 +290,372 @@ body {
 .hud-val { font-size: 1.1rem; font-weight: 900; color: var(--gold); line-height: 1; }
 .hud-lbl { font-size: 0.5rem; color: var(--grey); letter-spacing: 1px; }
 
-/* ── SLIDE 1 – PORTADA ── */
-.cover-title {
+/* ── PLAYER BADGE ── */
+.player-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,229,255,0.1);
+  border: 1px solid rgba(0,229,255,0.3);
+  border-radius: 50px;
+  padding: 4px 15px 4px 8px;
   font-family: var(--font-hd);
-  font-size: clamp(2.2rem, 5vw, 3.8rem);
-  font-weight: 900;
-  line-height: 1.05;
+  font-size: 0.7rem;
   color: var(--cyan);
-  text-shadow: 0 0 40px var(--cyan-glow), 0 0 80px rgba(0,229,255,0.15);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.player-badge:hover {
+  background: rgba(0,229,255,0.2);
+  border-color: var(--cyan);
+  transform: scale(1.05);
+}
+.player-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--gold));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.8rem;
+  color: var(--bg);
+}
+.player-count {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50px;
+  padding: 4px 12px;
+  font-size: 0.7rem;
+  color: var(--grey);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.player-count:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+/* ── PLAYER MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,11,24,0.95);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+.modal-content {
+  background: linear-gradient(145deg, var(--blue-1), var(--bg));
+  border: 2px solid var(--cyan);
+  border-radius: 30px;
+  padding: 40px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 0 50px var(--cyan-glow);
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
+.modal-header {
+  font-family: var(--font-hd);
+  font-size: 1.8rem;
+  color: var(--cyan);
+  margin-bottom: 20px;
+  text-align: center;
+  letter-spacing: 2px;
+}
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--grey);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+.modal-close:hover {
+  border-color: var(--red);
+  color: var(--red);
+  transform: rotate(90deg);
+}
+
+/* ── PLAYER LIST ── */
+.player-list {
+  margin: 20px 0;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+.player-item {
+  background: rgba(0,229,255,0.05);
+  border: 1px solid rgba(0,229,255,0.15);
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.player-item:hover {
+  background: rgba(0,229,255,0.1);
+  border-color: var(--cyan);
+  transform: translateX(5px);
+}
+.player-item.completed {
+  border-color: var(--gold);
+  background: rgba(255,193,7,0.05);
+}
+.player-item.completed .player-details h4 {
+  color: var(--gold);
+}
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  cursor: pointer;
+}
+.player-avatar-large {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--gold));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: var(--bg);
+}
+.player-avatar-large.completed {
+  background: linear-gradient(135deg, var(--gold), #ff8f00);
+  box-shadow: 0 0 20px var(--gold);
+}
+.player-details h4 {
+  font-family: var(--font-hd);
+  font-size: 1rem;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+.player-details p {
+  font-size: 0.8rem;
+  color: var(--grey);
+}
+.player-score-badge {
+  background: rgba(255,193,7,0.1);
+  border: 1px solid rgba(255,193,7,0.3);
+  border-radius: 50px;
+  padding: 4px 12px;
+  font-family: var(--font-hd);
+  font-size: 0.9rem;
+  color: var(--gold);
+  margin-right: 10px;
+}
+.current-player-indicator {
+  color: var(--green);
+  margin-left: 8px;
+  font-size: 0.7rem;
+}
+.completed-badge {
+  background: rgba(255,193,7,0.15);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 50px;
+  margin-left: 8px;
+  letter-spacing: 1px;
+}
+
+/* ── DELETE BUTTON ── */
+.delete-player-btn {
+  background: rgba(255,23,68,0.1);
+  border: 1px solid rgba(255,23,68,0.3);
+  color: var(--red);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+.delete-player-btn:hover {
+  background: rgba(255,23,68,0.2);
+  border-color: var(--red);
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(255,23,68,0.3);
+}
+
+/* ── PASSWORD MODAL ── */
+.password-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,11,24,0.98);
+  backdrop-filter: blur(15px);
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.password-modal.active {
+  display: flex;
+}
+.password-content {
+  background: linear-gradient(145deg, var(--blue-1), #031525);
+  border: 2px solid var(--red);
+  border-radius: 30px;
+  padding: 40px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(255,23,68,0.3);
+  animation: passwordPulse 2s infinite;
+}
+@keyframes passwordPulse {
+  0%,100% { box-shadow: 0 0 40px rgba(255,23,68,0.3); }
+  50% { box-shadow: 0 0 70px rgba(255,23,68,0.5); }
+}
+.password-icon {
+  font-size: 3rem;
+  color: var(--red);
+  margin-bottom: 20px;
+  animation: shake 0.5s ease-in-out infinite;
+}
+@keyframes shake {
+  0%,100% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  75% { transform: rotate(-5deg); }
+}
+.password-title {
+  font-family: var(--font-hd);
+  font-size: 1.5rem;
+  color: var(--red);
   margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+.password-sub {
+  color: var(--grey);
+  font-size: 0.9rem;
+  margin-bottom: 25px;
+}
+.password-input {
+  width: 100%;
+  padding: 15px 20px;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,23,68,0.3);
+  border-radius: 50px;
+  font-family: var(--font-body);
+  color: var(--white);
+  font-size: 1rem;
+  margin-bottom: 20px;
+  text-align: center;
   letter-spacing: 3px;
 }
-.cover-year {
+.password-input:focus {
+  outline: none;
+  border-color: var(--red);
+  box-shadow: 0 0 30px rgba(255,23,68,0.2);
+}
+.password-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.password-btn {
+  padding: 12px 30px;
+  border-radius: 50px;
   font-family: var(--font-hd);
-  font-size: 1rem; color: var(--gold);
-  letter-spacing: 8px; opacity: 0.8; margin-bottom: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
 }
-.cover-sub {
-  font-size: 1.1rem; color: rgba(232,244,255,0.65);
-  font-weight: 300; margin-bottom: 36px; letter-spacing: 0.5px;
-  max-width: 460px;
+.password-btn-confirm {
+  background: linear-gradient(135deg, var(--red), #ff4569);
+  color: var(--white);
 }
-.icon-row {
-  display: flex; gap: 14px; margin-bottom: 36px; flex-wrap: wrap;
+.password-btn-confirm:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(255,23,68,0.4);
 }
-.icon-chip {
-  background: rgba(0,229,255,0.06);
-  border: 1px solid rgba(0,229,255,0.2);
-  border-radius: 50px; padding: 6px 14px;
-  font-size: 0.78rem; color: rgba(232,244,255,0.6);
-  display: flex; align-items: center; gap: 6px;
+.password-btn-cancel {
+  background: transparent;
+  border: 1px solid var(--grey);
+  color: var(--grey);
+}
+.password-btn-cancel:hover {
+  border-color: var(--white);
+  color: var(--white);
+}
+
+/* ── ADD PLAYER FORM ── */
+.add-player-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.player-input {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50px;
+  padding: 12px 20px;
+  font-family: var(--font-body);
+  color: var(--white);
+  font-size: 0.9rem;
+}
+.player-input:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 20px var(--cyan-dim);
+}
+.player-input::placeholder {
+  color: var(--grey);
+}
+.btn-add {
+  background: linear-gradient(135deg, var(--cyan), var(--green));
+  border: none;
+  border-radius: 50px;
+  padding: 0 25px;
+  color: var(--bg);
+  font-family: var(--font-hd);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-add:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px var(--cyan-glow);
 }
 
 /* ── BUTTONS ── */
@@ -220,6 +700,38 @@ body {
 }
 .btn-ghost:hover { border-color: var(--cyan); background: var(--cyan-dim); }
 .btn-sm { font-size: 0.72rem; padding: 10px 24px; }
+
+/* ── SLIDE 1 – PORTADA ── */
+.cover-title {
+  font-family: var(--font-hd);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--cyan);
+  text-shadow: 0 0 40px var(--cyan-glow), 0 0 80px rgba(0,229,255,0.15);
+  margin-bottom: 10px;
+  letter-spacing: 3px;
+}
+.cover-year {
+  font-family: var(--font-hd);
+  font-size: 1rem; color: var(--gold);
+  letter-spacing: 8px; opacity: 0.8; margin-bottom: 20px;
+}
+.cover-sub {
+  font-size: 1.1rem; color: rgba(232,244,255,0.65);
+  font-weight: 300; margin-bottom: 36px; letter-spacing: 0.5px;
+  max-width: 460px;
+}
+.icon-row {
+  display: flex; gap: 14px; margin-bottom: 36px; flex-wrap: wrap;
+}
+.icon-chip {
+  background: rgba(0,229,255,0.06);
+  border: 1px solid rgba(0,229,255,0.2);
+  border-radius: 50px; padding: 6px 14px;
+  font-size: 0.78rem; color: rgba(232,244,255,0.6);
+  display: flex; align-items: center; gap: 6px;
+}
 
 /* ── NARRATIVE ── */
 .narrative-wrap {
@@ -454,6 +966,9 @@ body {
   .options-grid { grid-template-columns: 1fr; }
   .cover-title { font-size: 2rem; }
   .tf-grid { flex-direction: column; align-items: center; }
+  .add-player-form { flex-direction: column; }
+  .btn-add { padding: 12px; }
+  .notification-container { max-width: 90%; left: 5%; right: 5%; }
 }
 </style>
 </head>
@@ -462,6 +977,45 @@ body {
 <canvas id="stars"></canvas>
 <div id="grid-overlay"></div>
 <div id="scanlines"></div>
+
+<!-- ── NOTIFICATION CONTAINER ── -->
+<div class="notification-container" id="notificationContainer"></div>
+
+<!-- ── MODAL DE JUGADORES ── -->
+<div class="modal-overlay" id="playerModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="togglePlayerModal()">✕</button>
+    <div class="modal-header">👥 JUGADORES</div>
+    
+    <div class="player-list" id="playerList"></div>
+    
+    <div class="add-player-form">
+      <input type="text" class="player-input" id="newPlayerName" placeholder="Nombre del jugador..." maxlength="20">
+      <button class="btn-add" onclick="addPlayer()">AÑADIR</button>
+    </div>
+    
+    <div style="text-align: center; margin-top: 15px;">
+      <button class="btn btn-ghost btn-sm" onclick="switchPlayer()" id="switchPlayerBtn">CAMBIAR DE JUGADOR</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL DE CONTRASEÑA PARA ELIMINAR ── -->
+<div class="password-modal" id="passwordModal">
+  <div class="password-content">
+    <div class="password-icon">⚠️</div>
+    <div class="password-title">VERIFICACIÓN REQUERIDA</div>
+    <div class="password-sub">Ingresa la contraseña de administrador para eliminar jugadores</div>
+    <input type="password" class="password-input" id="passwordInput" placeholder="••••••••" maxlength="20">
+    <div class="password-buttons">
+      <button class="password-btn password-btn-confirm" onclick="confirmDelete()">CONFIRMAR</button>
+      <button class="password-btn password-btn-cancel" onclick="closePasswordModal()">CANCELAR</button>
+    </div>
+    <div style="margin-top: 15px; font-size: 0.7rem; color: var(--grey);">
+      Contraseña por defecto: <span style="color: var(--cyan);">admin2026</span>
+    </div>
+  </div>
+</div>
 
 <!-- ════════════════════════════════════════════════════════
      SLIDE 1 – PORTADA
@@ -489,12 +1043,22 @@ body {
       <div class="icon-chip">📋 12 Diapositivas</div>
       <div class="icon-chip">⏱️ 20 seg / pregunta</div>
       <div class="icon-chip">🏅 Logros desbloqueables</div>
+      <div class="icon-chip">🔄 Preguntas se reinician</div>
     </div>
 
-    <div style="display:flex;gap:14px;flex-wrap:wrap;">
-      <button class="btn btn-primary pulse" onclick="goTo(2)">▶ INICIAR MISIÓN</button>
-      <div style="font-family:var(--font-hd);font-size:0.6rem;color:var(--grey);align-self:center;letter-spacing:1px;">
-        DOCENTES INNOVADORES 2026
+    <!-- PLAYER HUD -->
+    <div style="display:flex;gap:14px;flex-wrap:wrap; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-primary pulse" onclick="startGame()">▶ INICIAR MISIÓN</button>
+        <div class="player-count" onclick="togglePlayerModal()">
+          <span>👥</span>
+          <span id="playerCountDisplay">0</span>
+          <span>jugadores</span>
+        </div>
+      </div>
+      <div class="player-badge" onclick="togglePlayerModal()" id="currentPlayerBadge">
+        <div class="player-avatar" id="currentPlayerAvatar">👤</div>
+        <span id="currentPlayerName">Sin jugador</span>
       </div>
     </div>
 
@@ -841,8 +1405,8 @@ body {
     <div class="win-badges" id="win-badges-list"></div>
 
     <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
-      <button class="btn btn-primary" onclick="goTo(1)">🔄 REINICIAR JUEGO</button>
-      <button class="btn btn-ghost btn-sm" onclick="goTo(2)">📖 Rever historia</button>
+      <button class="btn btn-primary" onclick="goToHome()">🏠 VOLVER AL INICIO</button>
+      <button class="btn btn-ghost btn-sm" onclick="goTo(2)">📖 Ver historia</button>
     </div>
 
     <div style="margin-top:22px;font-family:var(--font-hd);font-size:0.6rem;color:var(--grey);letter-spacing:2px;">
@@ -886,10 +1450,15 @@ body {
 
 <script>
 // ── STATE ──────────────────────────────────────────────
+let players = [];
+let currentPlayerId = null;
 let totalScore = 0;
 let slideTimers = {};
 let currentSlide = 1;
+let playerToDelete = null;
+const ADMIN_PASSWORD = "admin2026";
 const TOTAL_SLIDES = 12;
+const MAX_SCORE = 1800; // 9 preguntas * 200 puntos
 
 const CORRECT_MSG = [
   "🎉 ¡Excelente! El estudiante es el protagonista.",
@@ -911,6 +1480,389 @@ const WRONG_MSG = [
 
 const QUESTION_SLIDES = ['s3','s4','s5','s6','s7','s8','s9'];
 const QUESTION_IDS = [3,4,5,6,7,8,9];
+
+// ── RESET QUESTIONS FUNCTION ─────────────────────────
+function resetAllQuestions() {
+  QUESTION_SLIDES.forEach(slideId => {
+    resetSlide(slideId);
+  });
+}
+
+function resetSlide(slideId) {
+  // Resetear opciones
+  const opts = document.querySelectorAll(`#opts-${slideId} .opt, #opts-${slideId} .tf-btn`);
+  opts.forEach(opt => {
+    opt.disabled = false;
+    opt.classList.remove('correct', 'wrong');
+  });
+  
+  // Resetear feedback
+  const fb = document.getElementById('fb-' + slideId);
+  if (fb) {
+    fb.classList.remove('show', 'fb-correct', 'fb-wrong');
+    fb.textContent = '';
+  }
+  
+  // Ocultar botón de siguiente
+  const nxt = document.getElementById('nxt-' + slideId);
+  if (nxt) {
+    nxt.style.display = 'none';
+  }
+  
+  // Resetear timer si está activo
+  clearTimer(slideId);
+  
+  // Reiniciar timer visual
+  const timerBar = document.getElementById('tim-' + slideId);
+  const timerNum = document.getElementById('tnum-' + slideId);
+  if (timerBar && timerNum) {
+    const seconds = slideId === 's5' ? 15 : 20;
+    timerBar.style.width = '100%';
+    timerBar.style.background = 'linear-gradient(90deg, var(--cyan), var(--gold))';
+    timerNum.textContent = seconds;
+    timerNum.style.color = 'var(--gold)';
+  }
+}
+
+// ── GAME FLOW FUNCTIONS ─────────────────────────────
+function startGame() {
+  // Al iniciar juego, reiniciamos las preguntas pero mantenemos la puntuación del jugador
+  resetAllQuestions();
+  goTo(2); // Ir a la historia
+}
+
+function goToHome() {
+  // Al volver al inicio, reiniciamos las preguntas pero mantenemos la puntuación guardada
+  resetAllQuestions();
+  goTo(1);
+}
+
+// ── NOTIFICATION SYSTEM ────────────────────────────────
+function showCompletionNotification(playerName, score) {
+  const container = document.getElementById('notificationContainer');
+  
+  const notification = document.createElement('div');
+  notification.className = 'notification win';
+  
+  const time = new Date().toLocaleTimeString();
+  
+  notification.innerHTML = `
+    <button class="notification-close" onclick="this.parentElement.remove()">✕</button>
+    <div class="notification-content">
+      <span class="notification-icon">🏆</span>
+      <div class="notification-text">
+        <div class="notification-title">¡MISIÓN COMPLETADA!</div>
+        <div class="notification-message">
+          <strong style="color: var(--gold);">${playerName}</strong> ha completado el juego
+        </div>
+      </div>
+      <div class="notification-score">${score} pts</div>
+    </div>
+    <div class="notification-time">${time}</div>
+  `;
+  
+  container.appendChild(notification);
+  
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.style.animation = 'slideIn 0.5s ease reverse';
+      setTimeout(() => notification.remove(), 500);
+    }
+  }, 8000);
+}
+
+function showPlayerJoinedNotification(playerName) {
+  const container = document.getElementById('notificationContainer');
+  
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  
+  const time = new Date().toLocaleTimeString();
+  
+  notification.innerHTML = `
+    <button class="notification-close" onclick="this.parentElement.remove()">✕</button>
+    <div class="notification-content">
+      <span class="notification-icon">👋</span>
+      <div class="notification-text">
+        <div class="notification-title">NUEVO JUGADOR</div>
+        <div class="notification-message">
+          <strong style="color: var(--cyan);">${playerName}</strong> se ha unido a la misión
+        </div>
+      </div>
+    </div>
+    <div class="notification-time">${time}</div>
+  `;
+  
+  container.appendChild(notification);
+  
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.style.animation = 'slideIn 0.5s ease reverse';
+      setTimeout(() => notification.remove(), 500);
+    }
+  }, 5000);
+}
+
+function showPlayerSwitchNotification(playerName) {
+  const container = document.getElementById('notificationContainer');
+  
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  
+  const time = new Date().toLocaleTimeString();
+  
+  notification.innerHTML = `
+    <button class="notification-close" onclick="this.parentElement.remove()">✕</button>
+    <div class="notification-content">
+      <span class="notification-icon">🔄</span>
+      <div class="notification-text">
+        <div class="notification-title">CAMBIO DE JUGADOR</div>
+        <div class="notification-message">
+          Ahora juega: <strong style="color: var(--cyan);">${playerName}</strong>
+        </div>
+      </div>
+    </div>
+    <div class="notification-time">${time}</div>
+  `;
+  
+  container.appendChild(notification);
+  
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.style.animation = 'slideIn 0.5s ease reverse';
+      setTimeout(() => notification.remove(), 500);
+    }
+  }, 4000);
+}
+
+function showPlayerDeletedNotification(playerName) {
+  const container = document.getElementById('notificationContainer');
+  
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.style.borderColor = 'var(--red)';
+  
+  const time = new Date().toLocaleTimeString();
+  
+  notification.innerHTML = `
+    <button class="notification-close" onclick="this.parentElement.remove()">✕</button>
+    <div class="notification-content">
+      <span class="notification-icon">🗑️</span>
+      <div class="notification-text">
+        <div class="notification-title" style="color: var(--red);">JUGADOR ELIMINADO</div>
+        <div class="notification-message">
+          <strong style="color: var(--red);">${playerName}</strong> ha sido eliminado
+        </div>
+      </div>
+    </div>
+    <div class="notification-time">${time}</div>
+  `;
+  
+  container.appendChild(notification);
+  
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.style.animation = 'slideIn 0.5s ease reverse';
+      setTimeout(() => notification.remove(), 500);
+    }
+  }, 5000);
+}
+
+// ── PLAYER MANAGEMENT ─────────────────────────────────
+function initPlayers() {
+  const saved = localStorage.getItem('mision2026_players');
+  if (saved) {
+    players = JSON.parse(saved);
+  }
+  
+  if (players.length === 0) {
+    addPlayer('Invitado');
+  } else {
+    currentPlayerId = players[0].id;
+    totalScore = players[0].score;
+  }
+  
+  updatePlayerUI();
+}
+
+function addPlayer(name = null) {
+  const input = document.getElementById('newPlayerName');
+  const playerName = name || (input ? input.value.trim() : '');
+  
+  if (!playerName) {
+    showFeedback('❌ Ingresa un nombre para el jugador', 'fb-wrong');
+    return;
+  }
+  
+  const newPlayer = {
+    id: Date.now().toString(),
+    name: playerName,
+    score: 0,
+    avatar: playerName.charAt(0).toUpperCase(),
+    joinedAt: new Date().toISOString(),
+    completed: false
+  };
+  
+  players.push(newPlayer);
+  currentPlayerId = newPlayer.id;
+  totalScore = 0;
+  savePlayers();
+  updatePlayerUI();
+  
+  if (input) input.value = '';
+  
+  showFeedback(`✅ Jugador "${playerName}" añadido`, 'fb-correct');
+  showPlayerJoinedNotification(playerName);
+  
+  if (currentSlide === 1) {
+    updateHUD();
+  }
+}
+
+function deletePlayer(playerId) {
+  playerToDelete = playerId;
+  openPasswordModal();
+}
+
+function confirmDelete() {
+  const password = document.getElementById('passwordInput').value;
+  
+  if (password !== ADMIN_PASSWORD) {
+    showFeedback('❌ Contraseña incorrecta', 'fb-wrong');
+    document.getElementById('passwordInput').value = '';
+    return;
+  }
+  
+  if (playerToDelete) {
+    const playerIndex = players.findIndex(p => p.id === playerToDelete);
+    const deletedPlayer = players[playerIndex];
+    
+    players = players.filter(p => p.id !== playerToDelete);
+    
+    if (currentPlayerId === playerToDelete) {
+      if (players.length > 0) {
+        currentPlayerId = players[0].id;
+        totalScore = players[0].score;
+      } else {
+        addPlayer('Invitado');
+      }
+    }
+    
+    savePlayers();
+    updatePlayerUI();
+    closePasswordModal();
+    
+    showFeedback(`✅ Jugador "${deletedPlayer.name}" eliminado`, 'fb-correct');
+    showPlayerDeletedNotification(deletedPlayer.name);
+    
+    updateHUD();
+  }
+}
+
+function openPasswordModal() {
+  const modal = document.getElementById('passwordModal');
+  modal.classList.add('active');
+  document.getElementById('passwordInput').value = '';
+  document.getElementById('passwordInput').focus();
+}
+
+function closePasswordModal() {
+  const modal = document.getElementById('passwordModal');
+  modal.classList.remove('active');
+  playerToDelete = null;
+}
+
+function switchPlayer() {
+  if (players.length === 0) return;
+  
+  const currentIndex = players.findIndex(p => p.id === currentPlayerId);
+  const nextIndex = (currentIndex + 1) % players.length;
+  currentPlayerId = players[nextIndex].id;
+  
+  totalScore = getCurrentPlayer().score;
+  
+  savePlayers();
+  updatePlayerUI();
+  updateHUD();
+  
+  // Al cambiar de jugador, reiniciamos las preguntas
+  resetAllQuestions();
+  
+  showPlayerSwitchNotification(getCurrentPlayer().name);
+}
+
+function getCurrentPlayer() {
+  return players.find(p => p.id === currentPlayerId) || players[0];
+}
+
+function savePlayers() {
+  localStorage.setItem('mision2026_players', JSON.stringify(players));
+  updatePlayerCount();
+}
+
+function updatePlayerCount() {
+  const countEl = document.getElementById('playerCountDisplay');
+  if (countEl) countEl.textContent = players.length;
+}
+
+function updatePlayerUI() {
+  const currentPlayer = getCurrentPlayer();
+  if (!currentPlayer) return;
+  
+  const badge = document.getElementById('currentPlayerBadge');
+  const avatar = document.getElementById('currentPlayerAvatar');
+  const nameEl = document.getElementById('currentPlayerName');
+  
+  if (avatar) avatar.textContent = currentPlayer.avatar;
+  if (nameEl) nameEl.textContent = currentPlayer.name;
+  
+  const listEl = document.getElementById('playerList');
+  if (listEl) {
+    listEl.innerHTML = '';
+    players.forEach(player => {
+      const isCurrent = player.id === currentPlayerId;
+      const completed = player.completed || false;
+      const item = document.createElement('div');
+      item.className = `player-item ${completed ? 'completed' : ''}`;
+      item.innerHTML = `
+        <div class="player-info" onclick="selectPlayer('${player.id}')">
+          <div class="player-avatar-large ${completed ? 'completed' : ''}">${player.avatar}</div>
+          <div class="player-details">
+            <h4>${player.name} ${isCurrent ? '<span class="current-player-indicator">(ACTUAL)</span>' : ''} ${completed ? '<span class="completed-badge">🏆 COMPLETADO</span>' : ''}</h4>
+            <p>Último acceso: ${new Date(player.joinedAt).toLocaleDateString()}</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center;">
+          <div class="player-score-badge">${player.score} pts</div>
+          <div class="delete-player-btn" onclick="event.stopPropagation(); deletePlayer('${player.id}')" title="Eliminar jugador (requiere contraseña)">✕</div>
+        </div>
+      `;
+      listEl.appendChild(item);
+    });
+  }
+  
+  updatePlayerCount();
+}
+
+function selectPlayer(playerId) {
+  currentPlayerId = playerId;
+  totalScore = getCurrentPlayer().score;
+  savePlayers();
+  updatePlayerUI();
+  togglePlayerModal();
+  updateHUD();
+  
+  // Al seleccionar otro jugador, reiniciamos las preguntas
+  resetAllQuestions();
+  
+  showPlayerSwitchNotification(getCurrentPlayer().name);
+}
+
+function togglePlayerModal() {
+  const modal = document.getElementById('playerModal');
+  modal.classList.toggle('active');
+  updatePlayerUI();
+}
 
 // ── STARS / BACKGROUND ─────────────────────────────────
 const canvas = document.getElementById('stars');
@@ -1010,7 +1962,6 @@ function goTo(n) {
       next.classList.add('active');
       buildNavDots();
       updateHUD();
-      // start timer for question slides
       const qid = 's' + n;
       if (QUESTION_SLIDES.includes(qid)) {
         const secs = (qid === 's5') ? 15 : 20;
@@ -1026,6 +1977,14 @@ function updateHUD() {
   for (let i = 3; i <= 9; i++) {
     const el = document.getElementById('score-s' + i);
     if (el) el.textContent = totalScore;
+  }
+  
+  const currentPlayer = getCurrentPlayer();
+  if (currentPlayer) {
+    const nameEl = document.getElementById('currentPlayerName');
+    const avatarEl = document.getElementById('currentPlayerAvatar');
+    if (nameEl) nameEl.textContent = currentPlayer.name;
+    if (avatarEl) avatarEl.textContent = currentPlayer.avatar;
   }
 }
 
@@ -1080,24 +2039,31 @@ function timeExpired(slideId) {
 // ── ANSWER LOGIC ───────────────────────────────────────
 function answer(btn, slideId, type) {
   if (btn.disabled) return;
+  
   clearTimer(slideId);
 
   const opts = document.querySelectorAll(`#opts-${slideId} .opt`);
   opts.forEach(o => { o.disabled = true; });
 
-  const isCorrect = (type === 'C'); // 'C' = correct marker passed
+  const isCorrect = (type === 'C');
   const fb = document.getElementById('fb-' + slideId);
 
   if (isCorrect || btn.hasAttribute('data-correct')) {
     btn.classList.add('correct');
     totalScore += 200;
+    
+    const currentPlayer = getCurrentPlayer();
+    if (currentPlayer) {
+      currentPlayer.score = totalScore;
+      savePlayers();
+    }
+    
     if (fb) {
       fb.className = 'feedback fb-correct show';
       fb.textContent = CORRECT_MSG[Math.floor(Math.random() * CORRECT_MSG.length)];
     }
   } else {
     btn.classList.add('wrong');
-    // highlight correct
     opts.forEach(o => { if (o.hasAttribute('data-correct')) o.classList.add('correct'); });
     if (fb) {
       fb.className = 'feedback fb-wrong show';
@@ -1111,6 +2077,7 @@ function answer(btn, slideId, type) {
 
 function answerTF(btn, slideId, chosen, correct) {
   if (btn.disabled) return;
+  
   clearTimer(slideId);
 
   const btns = document.querySelectorAll(`#opts-${slideId} .tf-btn`);
@@ -1122,21 +2089,52 @@ function answerTF(btn, slideId, chosen, correct) {
   const fb = document.getElementById('fb-' + slideId);
   if (isCorrect) {
     totalScore += 200;
-    if (fb) { fb.className = 'feedback fb-correct show'; fb.textContent = '✅ ¡Correcto! El estudiante es siempre el protagonista en metodologías activas.'; }
+    
+    const currentPlayer = getCurrentPlayer();
+    if (currentPlayer) {
+      currentPlayer.score = totalScore;
+      savePlayers();
+    }
+    
+    if (fb) { 
+      fb.className = 'feedback fb-correct show'; 
+      fb.textContent = '✅ ¡Correcto! El estudiante es siempre el protagonista en metodologías activas.'; 
+    }
   } else {
     btns.forEach(b => { if (b.classList.contains('tf-true')) b.classList.add('correct'); });
-    if (fb) { fb.className = 'feedback fb-wrong show'; fb.textContent = '❌ La afirmación es Verdadera. El estudiante es el centro del aprendizaje activo.'; }
+    if (fb) { 
+      fb.className = 'feedback fb-wrong show'; 
+      fb.textContent = '❌ La afirmación es Verdadera. El estudiante es el centro del aprendizaje activo.'; 
+    }
   }
   updateHUD();
   const nxt = document.getElementById('nxt-' + slideId);
   if (nxt) nxt.style.display = 'inline-block';
 }
 
+function showFeedback(message, className) {
+  const fb = document.createElement('div');
+  fb.className = `feedback ${className} show`;
+  fb.textContent = message;
+  fb.style.position = 'fixed';
+  fb.style.top = '20px';
+  fb.style.left = '50%';
+  fb.style.transform = 'translateX(-50%)';
+  fb.style.zIndex = '2000';
+  fb.style.padding = '12px 24px';
+  document.body.appendChild(fb);
+  
+  setTimeout(() => {
+    fb.remove();
+  }, 2000);
+}
+
 // ── WIN SCREEN ─────────────────────────────────────────
 function showWinScreen() {
+  const currentPlayer = getCurrentPlayer();
   document.getElementById('final-score').textContent = totalScore;
 
-  const pct = totalScore / 1800; // max ~1800
+  const pct = totalScore / MAX_SCORE;
   let stars = pct >= 0.85 ? '⭐⭐⭐' : pct >= 0.55 ? '⭐⭐' : '⭐';
   document.getElementById('star-row').textContent = stars;
 
@@ -1147,6 +2145,16 @@ function showWinScreen() {
   if (totalScore >= 1600) list.push('💎 Puntuación perfecta');
   if (totalScore >= 1000) list.push('🔥 Más de 1,000 pts');
   list.push('🏅 Embajador del Aprendizaje 2026');
+  
+  if (currentPlayer) {
+    list.push(`👤 Jugador: ${currentPlayer.name}`);
+    
+    currentPlayer.completed = true;
+    savePlayers();
+    
+    showCompletionNotification(currentPlayer.name, totalScore);
+  }
+  
   list.forEach(b => {
     const el = document.createElement('div');
     el.className = 'win-badge';
@@ -1183,15 +2191,39 @@ document.addEventListener('keydown', e => {
     }
   }
   if (e.key === 'ArrowLeft' && currentSlide > 1) goTo(currentSlide - 1);
+  
+  if (e.key === 'Escape') {
+    closePasswordModal();
+    const playerModal = document.getElementById('playerModal');
+    if (playerModal.classList.contains('active')) {
+      playerModal.classList.remove('active');
+    }
+  }
 });
 
-// ── RESET SCORE ON GAME RESTART ────────────────────────
-const origGoTo = window.goTo;
-function resetIfStart(n) {
-  if (n === 1) { totalScore = 0; updateHUD(); }
-  origGoTo(n);
-}
-window.goTo = resetIfStart;
+// ── INIT ───────────────────────────────────────────────
+initPlayers();
+
+// Cerrar modales al hacer click fuera
+document.addEventListener('click', (e) => {
+  const playerModal = document.getElementById('playerModal');
+  const passwordModal = document.getElementById('passwordModal');
+  
+  if (e.target === playerModal) {
+    playerModal.classList.remove('active');
+  }
+  
+  if (e.target === passwordModal) {
+    passwordModal.classList.remove('active');
+    playerToDelete = null;
+  }
+});
+
+document.getElementById('passwordInput')?.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    confirmDelete();
+  }
+});
 </script>
 </body>
 </html>
