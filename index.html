@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Misión Educativa 2026 – Innovar para Transformar</title>
+<title>Misión Educativa 2026 – Multijugador</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,800;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -17,6 +17,8 @@
   --gold-dim: rgba(255,193,7,0.15);
   --green: #00e676;
   --red: #ff1744;
+  --purple: #aa00ff;
+  --pink: #ff00aa;
   --white: #e8f4ff;
   --grey: #607d8b;
   --font-hd: 'Orbitron', monospace;
@@ -275,6 +277,7 @@ body {
 .badge-orange{ background: rgba(255,152,0,.12);  border:1px solid rgba(255,152,0,.4);  color:#ff9800; }
 .badge-red   { background: rgba(255,23,68,.12);  border:1px solid rgba(255,23,68,.4);  color:#ff4569; }
 .badge-gold  { background: rgba(255,193,7,.18);  border:1px solid rgba(255,193,7,.6);  color:var(--gold); }
+.badge-purple { background: rgba(170,0,255,.12); border:1px solid rgba(170,0,255,.4); color:var(--purple); }
 
 /* ── HUD TOP ── */
 .hud {
@@ -400,6 +403,92 @@ body {
   border-color: var(--red);
   color: var(--red);
   transform: rotate(90deg);
+}
+
+/* ── LEADERBOARD ── */
+.leaderboard {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,193,7,0.3);
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 20px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.leaderboard-title {
+  font-family: var(--font-hd);
+  font-size: 0.8rem;
+  color: var(--gold);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  margin-bottom: 5px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+.leaderboard-item:hover {
+  background: rgba(255,193,7,0.1);
+  transform: translateX(5px);
+}
+.leaderboard-rank {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-hd);
+  font-size: 0.8rem;
+  background: rgba(255,193,7,0.2);
+  color: var(--gold);
+  margin-right: 10px;
+}
+.leaderboard-rank.gold { background: rgba(255,215,0,0.3); color: gold; }
+.leaderboard-rank.silver { background: rgba(192,192,192,0.3); color: silver; }
+.leaderboard-rank.bronze { background: rgba(205,127,50,0.3); color: #cd7f32; }
+.leaderboard-player {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.leaderboard-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--gold));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+.leaderboard-name {
+  font-size: 0.9rem;
+  color: var(--white);
+}
+.leaderboard-score {
+  font-family: var(--font-hd);
+  font-size: 1rem;
+  color: var(--gold);
+}
+.leaderboard-badge {
+  background: rgba(255,193,7,0.2);
+  border: 1px solid var(--gold);
+  border-radius: 50px;
+  padding: 2px 8px;
+  font-size: 0.6rem;
+  color: var(--gold);
+  margin-left: 8px;
 }
 
 /* ── PLAYER LIST ── */
@@ -960,6 +1049,14 @@ body {
   background: var(--cyan); display: block;
 }
 
+/* ── TURBOT MODE ── */
+.turbo-mode {
+  background: linear-gradient(135deg, var(--purple), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+}
+
 /* responsive */
 @media (max-width: 540px) {
   .card { padding: 28px 22px; }
@@ -987,6 +1084,9 @@ body {
     <button class="modal-close" onclick="togglePlayerModal()">✕</button>
     <div class="modal-header">👥 JUGADORES</div>
     
+    <!-- LEADERBOARD EN MODAL -->
+    <div class="leaderboard" id="leaderboardModal"></div>
+    
     <div class="player-list" id="playerList"></div>
     
     <div class="add-player-form">
@@ -996,6 +1096,10 @@ body {
     
     <div style="text-align: center; margin-top: 15px;">
       <button class="btn btn-ghost btn-sm" onclick="switchPlayer()" id="switchPlayerBtn">CAMBIAR DE JUGADOR</button>
+    </div>
+    
+    <div style="text-align: center; margin-top: 10px;">
+      <button class="btn btn-primary btn-sm" onclick="startMultiplayerMode()">🎮 MODO MULTIJUGADOR</button>
     </div>
   </div>
 </div>
@@ -1043,8 +1147,11 @@ body {
       <div class="icon-chip">📋 12 Diapositivas</div>
       <div class="icon-chip">⏱️ 20 seg / pregunta</div>
       <div class="icon-chip">🏅 Logros desbloqueables</div>
-      <div class="icon-chip">🔄 Preguntas se reinician</div>
+      <div class="icon-chip">👥 Multijugador</div>
     </div>
+
+    <!-- LEADERBOARD EN PORTADA -->
+    <div class="leaderboard" id="leaderboardHome"></div>
 
     <!-- PLAYER HUD -->
     <div style="display:flex;gap:14px;flex-wrap:wrap; align-items: center; justify-content: space-between; margin-bottom: 20px;">
@@ -1404,7 +1511,10 @@ body {
 
     <div class="win-badges" id="win-badges-list"></div>
 
-    <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+    <!-- LEADERBOARD EN PANTALLA DE VICTORIA -->
+    <div class="leaderboard" id="leaderboardWin" style="margin-top: 20px;"></div>
+
+    <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap; margin-top: 20px;">
       <button class="btn btn-primary" onclick="goToHome()">🏠 VOLVER AL INICIO</button>
       <button class="btn btn-ghost btn-sm" onclick="goTo(2)">📖 Ver historia</button>
     </div>
@@ -1456,6 +1566,8 @@ let totalScore = 0;
 let slideTimers = {};
 let currentSlide = 1;
 let playerToDelete = null;
+let multiplayerMode = false;
+let multiplayerInterval = null;
 const ADMIN_PASSWORD = "admin2026";
 const TOTAL_SLIDES = 12;
 const MAX_SCORE = 1800; // 9 preguntas * 200 puntos
@@ -1480,6 +1592,77 @@ const WRONG_MSG = [
 
 const QUESTION_SLIDES = ['s3','s4','s5','s6','s7','s8','s9'];
 const QUESTION_IDS = [3,4,5,6,7,8,9];
+
+// ── MULTIPLAYER FUNCTIONS ─────────────────────────────
+function startMultiplayerMode() {
+  multiplayerMode = true;
+  
+  // Crear jugadores de ejemplo si no hay suficientes
+  if (players.length < 3) {
+    addPlayer('Jugador 1');
+    addPlayer('Jugador 2');
+    addPlayer('Jugador 3');
+  }
+  
+  // Iniciar actualización en tiempo real
+  if (multiplayerInterval) clearInterval(multiplayerInterval);
+  multiplayerInterval = setInterval(updateAllLeaderboards, 1000);
+  
+  togglePlayerModal();
+  showFeedback('🎮 Modo multijugador activado', 'fb-correct');
+  
+  // Actualizar todas las leaderboards
+  updateAllLeaderboards();
+}
+
+function stopMultiplayerMode() {
+  multiplayerMode = false;
+  if (multiplayerInterval) {
+    clearInterval(multiplayerInterval);
+    multiplayerInterval = null;
+  }
+}
+
+function updateAllLeaderboards() {
+  updateLeaderboard('leaderboardHome');
+  updateLeaderboard('leaderboardModal');
+  updateLeaderboard('leaderboardWin');
+}
+
+function updateLeaderboard(elementId) {
+  const container = document.getElementById(elementId);
+  if (!container) return;
+  
+  // Ordenar jugadores por puntuación (mayor a menor)
+  const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
+  
+  let html = '<div class="leaderboard-title">🏆 TABLA DE CLASIFICACIÓN</div>';
+  
+  sortedPlayers.forEach((player, index) => {
+    const isCurrent = player.id === currentPlayerId;
+    const rankClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '';
+    
+    html += `
+      <div class="leaderboard-item" onclick="selectPlayer('${player.id}')" style="cursor: pointer;">
+        <div style="display: flex; align-items: center;">
+          <div class="leaderboard-rank ${rankClass}">${index + 1}</div>
+          <div class="leaderboard-player">
+            <div class="leaderboard-avatar">${player.avatar}</div>
+            <span class="leaderboard-name">${player.name} ${isCurrent ? '👈' : ''}</span>
+            ${player.completed ? '<span class="leaderboard-badge">🏆</span>' : ''}
+          </div>
+        </div>
+        <div class="leaderboard-score">${player.score} pts</div>
+      </div>
+    `;
+  });
+  
+  if (multiplayerMode) {
+    html += '<div style="text-align: center; margin-top: 10px; color: var(--purple); font-size: 0.7rem;">🎮 MODO MULTIJUGADOR ACTIVO</div>';
+  }
+  
+  container.innerHTML = html;
+}
 
 // ── RESET QUESTIONS FUNCTION ─────────────────────────
 function resetAllQuestions() {
@@ -1569,6 +1752,9 @@ function showCompletionNotification(playerName, score) {
       setTimeout(() => notification.remove(), 500);
     }
   }, 8000);
+  
+  // Actualizar leaderboards
+  updateAllLeaderboards();
 }
 
 function showPlayerJoinedNotification(playerName) {
@@ -1601,6 +1787,8 @@ function showPlayerJoinedNotification(playerName) {
       setTimeout(() => notification.remove(), 500);
     }
   }, 5000);
+  
+  updateAllLeaderboards();
 }
 
 function showPlayerSwitchNotification(playerName) {
@@ -1666,6 +1854,43 @@ function showPlayerDeletedNotification(playerName) {
       setTimeout(() => notification.remove(), 500);
     }
   }, 5000);
+  
+  updateAllLeaderboards();
+}
+
+function showScoreUpdateNotification(playerName, newScore) {
+  if (!multiplayerMode) return;
+  
+  const container = document.getElementById('notificationContainer');
+  
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.style.borderColor = 'var(--green)';
+  
+  const time = new Date().toLocaleTimeString();
+  
+  notification.innerHTML = `
+    <button class="notification-close" onclick="this.parentElement.remove()">✕</button>
+    <div class="notification-content">
+      <span class="notification-icon">⬆️</span>
+      <div class="notification-text">
+        <div class="notification-title" style="color: var(--green);">PUNTUACIÓN ACTUALIZADA</div>
+        <div class="notification-message">
+          <strong style="color: var(--cyan);">${playerName}</strong> ahora tiene <strong style="color: var(--gold);">${newScore} pts</strong>
+        </div>
+      </div>
+    </div>
+    <div class="notification-time">${time}</div>
+  `;
+  
+  container.appendChild(notification);
+  
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.style.animation = 'slideIn 0.5s ease reverse';
+      setTimeout(() => notification.remove(), 500);
+    }
+  }, 3000);
 }
 
 // ── PLAYER MANAGEMENT ─────────────────────────────────
@@ -1683,6 +1908,7 @@ function initPlayers() {
   }
   
   updatePlayerUI();
+  updateAllLeaderboards();
 }
 
 function addPlayer(name = null) {
@@ -1691,6 +1917,12 @@ function addPlayer(name = null) {
   
   if (!playerName) {
     showFeedback('❌ Ingresa un nombre para el jugador', 'fb-wrong');
+    return;
+  }
+  
+  // Evitar nombres duplicados
+  if (players.some(p => p.name.toLowerCase() === playerName.toLowerCase())) {
+    showFeedback('❌ Ya existe un jugador con ese nombre', 'fb-wrong');
     return;
   }
   
@@ -1708,6 +1940,7 @@ function addPlayer(name = null) {
   totalScore = 0;
   savePlayers();
   updatePlayerUI();
+  updateAllLeaderboards();
   
   if (input) input.value = '';
   
@@ -1750,6 +1983,7 @@ function confirmDelete() {
     
     savePlayers();
     updatePlayerUI();
+    updateAllLeaderboards();
     closePasswordModal();
     
     showFeedback(`✅ Jugador "${deletedPlayer.name}" eliminado`, 'fb-correct');
@@ -1783,6 +2017,7 @@ function switchPlayer() {
   
   savePlayers();
   updatePlayerUI();
+  updateAllLeaderboards();
   updateHUD();
   
   // Al cambiar de jugador, reiniciamos las preguntas
@@ -1798,6 +2033,7 @@ function getCurrentPlayer() {
 function savePlayers() {
   localStorage.setItem('mision2026_players', JSON.stringify(players));
   updatePlayerCount();
+  updateAllLeaderboards();
 }
 
 function updatePlayerCount() {
@@ -1850,6 +2086,7 @@ function selectPlayer(playerId) {
   savePlayers();
   updatePlayerUI();
   togglePlayerModal();
+  updateAllLeaderboards();
   updateHUD();
   
   // Al seleccionar otro jugador, reiniciamos las preguntas
@@ -1862,6 +2099,7 @@ function togglePlayerModal() {
   const modal = document.getElementById('playerModal');
   modal.classList.toggle('active');
   updatePlayerUI();
+  updateLeaderboard('leaderboardModal');
 }
 
 // ── STARS / BACKGROUND ─────────────────────────────────
@@ -1962,6 +2200,7 @@ function goTo(n) {
       next.classList.add('active');
       buildNavDots();
       updateHUD();
+      updateAllLeaderboards();
       const qid = 's' + n;
       if (QUESTION_SLIDES.includes(qid)) {
         const secs = (qid === 's5') ? 15 : 20;
@@ -2054,8 +2293,14 @@ function answer(btn, slideId, type) {
     
     const currentPlayer = getCurrentPlayer();
     if (currentPlayer) {
+      const oldScore = currentPlayer.score;
       currentPlayer.score = totalScore;
       savePlayers();
+      
+      // Notificar actualización en modo multijugador
+      if (multiplayerMode && oldScore !== totalScore) {
+        showScoreUpdateNotification(currentPlayer.name, totalScore);
+      }
     }
     
     if (fb) {
@@ -2071,6 +2316,7 @@ function answer(btn, slideId, type) {
     }
   }
   updateHUD();
+  updateAllLeaderboards();
   const nxt = document.getElementById('nxt-' + slideId);
   if (nxt) nxt.style.display = 'inline-block';
 }
@@ -2092,8 +2338,14 @@ function answerTF(btn, slideId, chosen, correct) {
     
     const currentPlayer = getCurrentPlayer();
     if (currentPlayer) {
+      const oldScore = currentPlayer.score;
       currentPlayer.score = totalScore;
       savePlayers();
+      
+      // Notificar actualización en modo multijugador
+      if (multiplayerMode && oldScore !== totalScore) {
+        showScoreUpdateNotification(currentPlayer.name, totalScore);
+      }
     }
     
     if (fb) { 
@@ -2108,6 +2360,7 @@ function answerTF(btn, slideId, chosen, correct) {
     }
   }
   updateHUD();
+  updateAllLeaderboards();
   const nxt = document.getElementById('nxt-' + slideId);
   if (nxt) nxt.style.display = 'inline-block';
 }
@@ -2151,6 +2404,7 @@ function showWinScreen() {
     
     currentPlayer.completed = true;
     savePlayers();
+    updateAllLeaderboards();
     
     showCompletionNotification(currentPlayer.name, totalScore);
   }
@@ -2222,6 +2476,13 @@ document.addEventListener('click', (e) => {
 document.getElementById('passwordInput')?.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     confirmDelete();
+  }
+});
+
+// Limpiar intervalo al cerrar
+window.addEventListener('beforeunload', () => {
+  if (multiplayerInterval) {
+    clearInterval(multiplayerInterval);
   }
 });
 </script>
